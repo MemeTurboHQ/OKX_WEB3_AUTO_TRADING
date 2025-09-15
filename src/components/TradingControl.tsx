@@ -135,7 +135,9 @@ export const TradingControl: React.FC<TradingControlProps> = ({
                 {status.wallets.map((wallet, index) => (
                   <div key={index} className="flex justify-between items-center text-xs">
                     <span className="text-gray-light font-mono">{wallet.publicKey}</span>
-                    <span className="text-green-400">{wallet.balance.toFixed(4)} SOL</span>
+                    
+                    <span className="text-green-400">BAL : {wallet.balance.toFixed(4)} SOL</span>
+                    <span className="text-green-400">VOL : {wallet.balance.toFixed(4)} $</span>
                   </div>
                 ))}
               </div>

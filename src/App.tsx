@@ -5,6 +5,7 @@ import { TokenManager } from './components/TokenManager';
 import { TradingControl } from './components/TradingControl';
 import { TradingLog } from './components/TradingLog';
 import './index.css';
+import { VolManager } from './components/VolManager';
 
 function App() {
   const solanaServiceRef = useRef<SolanaService>(new SolanaService());
@@ -67,7 +68,7 @@ function App() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2 animate-glow-pulse bg-gray-800 px-4 py-2 rounded-3xl">
-            Solana OKX WEB3 AUTO TRADING
+            OKX BOOST AUTO TRADING (Solana)
           </h1>
 
           {/* <p className="text-gray-light">
@@ -111,7 +112,10 @@ function App() {
               solanaService={solanaServiceRef.current}
               onTokensImported={() => {/* 代币导入成功 */}}
             />
-            
+            <VolManager
+              solanaService={solanaServiceRef.current}
+              onVolChanged={() => {/* 代币导入成功 */}}
+            />
             <TradingControl 
               solanaService={solanaServiceRef.current}
               onTradingStatusChange={handleTradingStatusChange}
@@ -143,7 +147,6 @@ function App() {
               <h4 className="text-yellow-400 font-bold mb-2">⚠️ 安全提示</h4>
               <ul className="text-yellow-300 text-sm space-y-1">
                 <li>• 请保护好您的私钥，不要泄露给他人</li>
-                <li>• 建议使用测试环境进行初步测试</li>
                 <li>• 请根据实际需求调整交易参数</li>
                 <li>• 注意网络状况和GAS情况</li>
               </ul>

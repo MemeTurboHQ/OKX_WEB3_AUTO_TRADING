@@ -1,3 +1,4 @@
+import { api_jup_quote, api_okx_swap } from '@/core/request';
 import { Connection, Keypair, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import bs58 from 'bs58';
 
@@ -128,6 +129,7 @@ export class SolanaService {
 
   // 开始交易
   startTrading(onTradeLog: (log: TradeLog) => void): boolean {
+    console.log("🌼 startTrading ...")
     if (this.wallets.length === 0) {
       return false;
     }
@@ -135,17 +137,21 @@ export class SolanaService {
     if (this.tokenAddresses.length === 0) {
       return false;
     }
-    
     this.isTrading = true;
     
     // 每3秒执行一次交易
     this.tradeInterval = setInterval(async () => {
       if (!this.isTrading) return;
-      
-      // 随机选择钱包和代币
+      console.log("🌼 startTrading tradeInterval...")
+      const quote = await api_jup_quote()
+      console.log("🍺Quote ::",quote)
+      const okx = await api_okx_swap();
+      console.log("🚀OKX ::",okx)
       const randomWallet = this.wallets[Math.floor(Math.random() * this.wallets.length)];
       const randomToken = this.tokenAddresses[Math.floor(Math.random() * this.tokenAddresses.length)];
       const tradeType = Math.random() > 0.5 ? 'buy' : 'sell';
+      
+
       
       try {
         const tradeLog = await this.simulateTransaction(randomWallet, randomToken, tradeType);
