@@ -25,6 +25,9 @@ export class SolanaService {
   private tokenAddresses: string[] = [];
   private isTrading = false;
   private tradeInterval: NodeJS.Timeout | null = null;
+
+  private amount:string;
+  private slippage:string
   
   constructor() {
     // 使用 Devnet 进行测试
@@ -88,6 +91,13 @@ export class SolanaService {
     return { success, failed, errors };
   }
 
+  setAmount(amt:string){
+    this.amount = amt;
+  }
+  setSlippage(slp:string)
+  {
+    this.slippage = slp
+  }
   // 获取钱包余额
   async getWalletBalance(publicKey: string): Promise<number> {
     try {
@@ -128,7 +138,7 @@ export class SolanaService {
   }
 
   // 开始交易
-  startTrading(onTradeLog: (log: TradeLog) => void): boolean {
+  startTrading(isSell:number,onTradeLog: (log: TradeLog) => void): boolean {
     console.log("🌼 startTrading ...")
     if (this.wallets.length === 0) {
       return false;
@@ -142,9 +152,13 @@ export class SolanaService {
     // 每3秒执行一次交易
     this.tradeInterval = setInterval(async () => {
       if (!this.isTrading) return;
-      console.log("🌼 startTrading tradeInterval...")
+      console.log("🌼 startTrading tradeInterval..." , Boolean(isSell),this.amount,this.slippage)
+      console.log(this.wallets)
       // const quote = await api_jup_quote()
-      console.log("🍺Quote ::")
+      console.log("🍺Quote ::",this.isTrading)
+      // this.isTrading = false;
+      // console.log("Stop trading",this.isTrading)
+      // this.stopTrading()
       const randomWallet = this.wallets[Math.floor(Math.random() * this.wallets.length)];
       const randomToken = this.tokenAddresses[Math.floor(Math.random() * this.tokenAddresses.length)];
       const tradeType = Math.random() > 0.5 ? 'buy' : 'sell';

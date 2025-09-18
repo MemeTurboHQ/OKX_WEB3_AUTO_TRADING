@@ -15,7 +15,6 @@ export const TradingControl: React.FC<TradingControlProps> = ({
   const [status, setStatus] = useState(solanaService.getStatus());
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
-
   useEffect(() => {
     const interval = setInterval(() => {
       setStatus(solanaService.getStatus());
@@ -37,7 +36,7 @@ export const TradingControl: React.FC<TradingControlProps> = ({
 
     setIsStarting(true);
     try {
-      const success = solanaService.startTrading(onTradeLog);
+      const success = solanaService.startTrading(direction,onTradeLog);
       if (success) {
         onTradingStatusChange(true);
       }

@@ -6,6 +6,7 @@ import { TradingControl } from './components/TradingControl';
 import { TradingLog } from './components/TradingLog';
 import './index.css';
 import { VolManager } from './components/VolManager';
+import { SlippageManager } from './components/SlippageManager';
 
 function App() {
   const solanaServiceRef = useRef<SolanaService>(new SolanaService());
@@ -114,7 +115,15 @@ function App() {
             />
             <VolManager
               solanaService={solanaServiceRef.current}
-              onVolChanged={() => {/* 代币导入成功 */}}
+              onVolChanged={(vol:any) => {
+                console.log("change vol ::",vol)
+              }}
+            />
+            <SlippageManager
+              solanaService={solanaServiceRef.current}
+              onSlippageChange={(slippage:any) => {
+                console.log("slippage change ::",slippage)
+              }}
             />
             <TradingControl 
               solanaService={solanaServiceRef.current}
