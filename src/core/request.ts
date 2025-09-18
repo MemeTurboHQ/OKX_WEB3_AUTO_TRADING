@@ -269,14 +269,12 @@ async function api_jup_quote(from:string,to:string,amountIn:string) {
   }
 }
 
-async function api_okx_swap(body:any) {
+async function api_jup_swap(from:string,to:string,amountIn:string) {
   try {
-    let path = `https://web3.okx.com/priapi/v1/dx/trade/market-trade/prepare-order`;
+    let path = `https://lite-api.jup.ag/swap/v1/quote?inputMint=${from}&outputMint=${to}&amount=${amountIn}&slippageBps=50&restrictIntermediateTokens=true`;
     return await requester(
       path,
-      request_post_unauth(
-        body
-      ),
+      request_get_unauth(),
     );
   } catch (e) {
     console.error(e);
@@ -297,5 +295,5 @@ export {
     api_profile,
     api_keypair,
     api_jup_quote,
-    api_okx_swap
+    api_jup_swap
 };
