@@ -111,6 +111,12 @@ export const TradingLog: React.FC<TradingLogProps> = ({ logs, isTrading }) => {
               key={log.id}
               className="flex items-center justify-between p-3 bg-dark-light border border-gray-dark rounded-lg animate-slide-up hover:border-pink/30 transition-all duration-300"
               style={{ animationDelay: `${index * 50}ms` }}
+              onClick={
+                ()=>
+                {
+                  window.open("https://solscan.io/tx/"+log.id)
+                }
+              }
             >
               <div className="flex items-center gap-3 flex-1">
                 <div className="flex items-center gap-2">

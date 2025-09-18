@@ -1,4 +1,5 @@
 
+import { getSolBalance, getSplBalances, jupBuy, jupSell } from '@/core/web3';
 import { Connection, Keypair, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import bs58 from 'bs58';
 
@@ -29,9 +30,9 @@ export class SolanaService {
   private amount:string;
   private slippage:string
   
+  private workingIndex :number = 0;
   constructor() {
-    // 使用 Devnet 进行测试
-    this.connection = new Connection('https://api.devnet.solana.com', 'confirmed');
+    this.connection = new Connection('https://mainnet.helius-rpc.com/?api-key=a32e6052-b2ed-491f-9521-ac6df5e9665a', 'confirmed');
   }
 
   // 导入私钥
@@ -98,6 +99,14 @@ export class SolanaService {
   {
     this.slippage = slp
   }
+  updateWorkingIndex()
+  {
+    this.workingIndex++;
+  }
+  resetWorkingIndex()
+  {
+    this.workingIndex=0;
+  }
   // 获取钱包余额
   async getWalletBalance(publicKey: string): Promise<number> {
     try {
@@ -152,22 +161,99 @@ export class SolanaService {
     // 每3秒执行一次交易
     this.tradeInterval = setInterval(async () => {
       if (!this.isTrading) return;
-      console.log("🌼 startTrading tradeInterval..." , Boolean(isSell),this.amount,this.slippage)
-      console.log(this.wallets)
-      // const quote = await api_jup_quote()
-      console.log("🍺Quote ::",this.isTrading)
-      // this.isTrading = false;
-      // console.log("Stop trading",this.isTrading)
-      // this.stopTrading()
-      const randomWallet = this.wallets[Math.floor(Math.random() * this.wallets.length)];
-      const randomToken = this.tokenAddresses[Math.floor(Math.random() * this.tokenAddresses.length)];
-      const tradeType = Math.random() > 0.5 ? 'buy' : 'sell';
-      
-
-      
+      if(this.workingIndex >= this.wallets.length)
+      {
+        this.stopTrading();
+        this.resetWorkingIndex()
+        return false;
+      }
+      this.updateWorkingIndex()
       try {
-        const tradeLog = await this.simulateTransaction(randomWallet, randomToken, tradeType);
-        onTradeLog(tradeLog);
+        console.log("🌼 startTrading tradeInterval..." , Boolean(isSell),this.amount,this.slippage,this.workingIndex)
+        const wallet = this.wallets[this.workingIndex-1]
+        for(let token of this.tokenAddresses)
+        {
+          if(isSell)
+          {
+            //Sell token . get spl amount
+            const amt = await getSplBalances(wallet.publicKey,token);
+            const tx =await jupSell(new PublicKey(token),((Number(this.amount)/100)*Number(amt)).toFixed(0),(Number(this.slippage)*100).toFixed(0),wallet.keypair.publicKey)
+            if(tx)
+            {
+              //Sign the version transaction and send 
+              tx.sign([wallet.keypair]);
+              const hash = await this.connection.sendRawTransaction(tx.serialize());
+              console.log(hash);
+              const tradeLog: TradeLog = {
+                id: hash,
+                timestamp: new Date(),
+                walletAddress: wallet.publicKey.substring(0, 8) + '...',
+                tokenAddress: token.substring(0, 8) + '...',
+                txHash: hash.substr(2, 32),
+                status: 'success',
+                amount: (Number(this.amount)/100)*Number(amt),
+                type:"sell"
+              }
+              onTradeLog(tradeLog);
+            }else{
+              const tradeLog: TradeLog = {
+                id: Date.now().toString(),
+                timestamp: new Date(),
+                walletAddress: wallet.publicKey.substring(0, 8) + '...',
+                tokenAddress: token.substring(0, 8) + '...',
+                txHash: "NONE",
+                status: 'failed',
+                amount: (Number(this.amount)/100)*Number(amt),
+                type:"sell"
+              }
+              onTradeLog(tradeLog);
+            }
+
+          }else{
+            //Buy token . get sol amount
+            const amt =await getSolBalance(wallet.publicKey)
+            console.log(amt)
+            const tx =await jupBuy(new PublicKey(token),((Number(this.amount)/100)*Number(amt)).toFixed(0),(Number(this.slippage)*100).toFixed(0),wallet.keypair.publicKey)
+            //Sign the version transaction and send 
+            if(tx)
+            {
+              //Sign the version transaction and send 
+              tx.sign([wallet.keypair]);
+              const hash = await this.connection.sendRawTransaction(tx.serialize());
+              console.log(hash);
+              const tradeLog: TradeLog = {
+                id: hash,
+                timestamp: new Date(),
+                walletAddress: wallet.publicKey.substring(0, 8) + '...',
+                tokenAddress: token.substring(0, 8) + '...',
+                txHash: hash.substr(2, 32),
+                status: 'success',
+                amount: (Number(this.amount)/100)*Number(amt),
+                type:"buy"
+              }
+              onTradeLog(tradeLog);
+            }else{
+              const tradeLog: TradeLog = {
+                id: Date.now().toString(),
+                timestamp: new Date(),
+                walletAddress: wallet.publicKey.substring(0, 8) + '...',
+                tokenAddress: token.substring(0, 8) + '...',
+                txHash: "NONE",
+                status: 'failed',
+                amount: (Number(this.amount)/100)*Number(amt),
+                type:"buy"
+              }
+              onTradeLog(tradeLog);
+            }
+
+          }
+        }
+        // const randomWallet = this.wallets[Math.floor(Math.random() * this.wallets.length)];
+        // const randomToken = this.tokenAddresses[Math.floor(Math.random() * this.tokenAddresses.length)];
+        // const tradeType = Math.random() > 0.5 ? 'buy' : 'sell';
+
+        // const tradeLog = await this.simulateTransaction(randomWallet, randomToken, tradeType);
+        // onTradeLog(tradeLog);
       } catch (error) {
         console.error('交易执行失败:', error);
       }
