@@ -68,7 +68,7 @@ function App() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2 animate-glow-pulse bg-gray-800 px-4 py-2 rounded-3xl">
-            OKX BOOST AUTO TRADING (Solana)
+            JUP MULTI TRADING (Solana)
           </h1>
 
           {/* <p className="text-gray-light">

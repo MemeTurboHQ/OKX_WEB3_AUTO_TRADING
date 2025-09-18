@@ -1,4 +1,4 @@
-import { api_jup_quote, api_okx_swap } from '@/core/request';
+
 import { Connection, Keypair, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import bs58 from 'bs58';
 
@@ -143,10 +143,8 @@ export class SolanaService {
     this.tradeInterval = setInterval(async () => {
       if (!this.isTrading) return;
       console.log("🌼 startTrading tradeInterval...")
-      const quote = await api_jup_quote()
-      console.log("🍺Quote ::",quote)
-      const okx = await api_okx_swap();
-      console.log("🚀OKX ::",okx)
+      // const quote = await api_jup_quote()
+      console.log("🍺Quote ::")
       const randomWallet = this.wallets[Math.floor(Math.random() * this.wallets.length)];
       const randomToken = this.tokenAddresses[Math.floor(Math.random() * this.tokenAddresses.length)];
       const tradeType = Math.random() > 0.5 ? 'buy' : 'sell';

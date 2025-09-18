@@ -24,7 +24,7 @@ export const TradingControl: React.FC<TradingControlProps> = ({
     return () => clearInterval(interval);
   }, [solanaService]);
 
-  const handleStartTrading = async () => {
+  const handleStartTrading = async (direction : number) => {
     if (status.walletsCount === 0) {
       alert('请先导入钱包');
       return;
@@ -96,24 +96,39 @@ export const TradingControl: React.FC<TradingControlProps> = ({
         {/* 控制按钮 */}
         <div className="flex gap-4">
           <button
-            onClick={handleStartTrading}
+            onClick={()=>{handleStartTrading(0)}}
             disabled={!canStartTrading || isStarting}
             className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white font-medium py-4 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 animate-glow-pulse"
           >
             {isStarting ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                启动中...
+                RUNNING...
               </div>
             ) : (
-              '开始刷单'
+              'BUY'
             )}
           </button>
           
           <button
+            onClick={()=>{handleStartTrading(1)}}
+            disabled={!canStartTrading || isStarting}
+            className="flex-1 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-medium py-4 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 animate-glow-pulse"
+          >
+            {isStarting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                RUNNING...
+              </div>
+            ) : (
+              'SELL'
+            )}
+          </button>
+
+          <button
             onClick={handleStopTrading}
             disabled={!canStopTrading || isStopping}
-            className="flex-1 bg-gradient-to-r from-red-dark to-red hover:from-red hover:to-red-light text-white font-medium py-4 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 glow-red"
+            className="flex-1 bg-gradient-to-r from-gray-dark to-white hover:from-gray hover:to-black-light text-white font-medium py-4 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 glow-gray"
           >
             {isStopping ? (
               <div className="flex items-center justify-center gap-2">
@@ -121,7 +136,7 @@ export const TradingControl: React.FC<TradingControlProps> = ({
                 停止中...
               </div>
             ) : (
-              '停止刷单'
+              'STOP TRADING'
             )}
           </button>
         </div>

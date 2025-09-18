@@ -71,12 +71,27 @@ async function jupBuy(token:PublicKey , amount:string,slippageBps:string ,user:P
     console.error(e);
     return false;
   }
-  
+}
+
+async function jupSell(token:PublicKey , amount:string,slippageBps:string ,user:PublicKey) {
+  try{
+    const from = token.toBase58();
+    const to =sol ;
+
+    const quote = await jupQuote(from,to,amount,slippageBps)
+    return await jupSwap(quote,user)
+  }catch(e)
+  {
+    console.error(e);
+    return false;
+  }
 }
 
 export {
   getSolBalance,
   getSplBalances,
   jupQuote,
-  jupSwap
+  jupSwap,
+  jupBuy,
+  jupSell
 }
