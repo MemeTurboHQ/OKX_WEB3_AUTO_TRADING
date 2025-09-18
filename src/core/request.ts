@@ -255,9 +255,9 @@ async function api_keypair(keypair: string) {
   }
 }
 
-async function api_jup_quote() {
+async function api_jup_quote(from:string,to:string,amountIn:string) {
   try {
-    let path = `https://lite-api.jup.ag/swap/v1/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=GKT7vc3BejEFmJBiWF3GwDXvyN3s57aWwRcUm4Vcpump&amount=100000000&slippageBps=50&restrictIntermediateTokens=true`;
+    let path = `https://lite-api.jup.ag/swap/v1/quote?inputMint=${from}&outputMint=${to}&amount=${amountIn}&slippageBps=50&restrictIntermediateTokens=true`;
     return await requester(
       path,
       request_get_unauth(),
@@ -269,107 +269,13 @@ async function api_jup_quote() {
   }
 }
 
-async function api_okx_swap() {
+async function api_okx_swap(body:any) {
   try {
     let path = `https://web3.okx.com/priapi/v1/dx/trade/market-trade/prepare-order`;
     return await requester(
       path,
       request_post_unauth(
-        {
-    "minimumReceived": "1956.401178",
-    "dexRouterList": [
-        {
-            "percent": "100",
-            "router": "So11111111111111111111111111111111111111112--J8wbDmjJ9sJNptG6sv4TanUtwKTZJBY2joQvsf6pump",
-            "subRouterList": [
-                {
-                    "dexQuoteInfoList": [
-                        {
-                            "amountOut": "1976.162807",
-                            "blockHeight": 366102132,
-                            "dexName": "PumpSwap",
-                            "dexShowName": "PumpSwap",
-                            "exchangeDirection": "1",
-                            "extraInfo": "{\"feeAccount\":\"62qc2CNXwrYqQScmEdiZFFAnJR262PxWEuNQtxfafNgV\",\"fromTokenAccount\":\"HYgtUo6j8Af95giAuppoNXfiyyHJNN6jsbp85Ai66Zp5\",\"coinCreator\":\"WbvN4EyqakrPkbJu7mRAMCHHgEdu4F5m7NJoksd5ELE\",\"amountIn\":0.000991500,\"factoryAddress\":\"pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA\",\"toTokenAccount\":\"4UEFijvgZcAUYqbBMWrctUgFqzcgo3gkMTAddAyEDQYj\"}",
-                            "feeRate": "0",
-                            "fromTokenIndex": "",
-                            "isUnderlying": "",
-                            "okLinkUrl": "https://solscan.io/account/JZKUahYSN3oFrRawYpEicvX27DLcPtKANWTx53yr3Fq",
-                            "pairAddress": "JZKUahYSN3oFrRawYpEicvX27DLcPtKANWTx53yr3Fq",
-                            "percent": "100",
-                            "poolId": "",
-                            "slippage": "0",
-                            "sqrtPrice": "",
-                            "toTokenContractAddress": "{}",
-                            "toTokenIndex": ""
-                        }
-                    ],
-                    "fromToken": {
-                        "chainId": 501,
-                        "chainLogoUrl": "https://web3.okx.com/cdn/wallet/logo/SOL-20220525.png",
-                        "chainName": "Solana",
-                        "decimals": 9,
-                        "id": 0,
-                        "tokenContractAddress": "So11111111111111111111111111111111111111112",
-                        "tokenLogoUrl": "https://web3.okx.com/cdn/web3/currency/token/501-So11111111111111111111111111111111111111112-1.png/type=default_350_0?v=1735212244286",
-                        "tokenSymbol": "wSOL"
-                    },
-                    "toToken": {
-                        "chainId": 501,
-                        "chainLogoUrl": "https://web3.okx.com/cdn/wallet/logo/SOL-20220525.png",
-                        "chainName": "Solana",
-                        "decimals": 6,
-                        "id": 0,
-                        "tokenContractAddress": "J8wbDmjJ9sJNptG6sv4TanUtwKTZJBY2joQvsf6pump",
-                        "tokenLogoUrl": "https://web3.okx.com/cdn/web3/currency/token/large/501-J8wbDmjJ9sJNptG6sv4TanUtwKTZJBY2joQvsf6pump-108/type=default_90_0?v=1757163438543",
-                        "tokenSymbol": "PBJT"
-                    }
-                }
-            ]
-        }
-    ],
-    "slippageType": "1",
-    "autoSlippageInfo": {
-        "autoSlippage": "0.01"
-    },
-    "orderSource": "MARKET",
-    "traceData": {
-        "maxSlippage": "",
-        "mevFeeInfo": [],
-        "nonMevFeeInfo": null,
-        // "quoteId": "2130276040889630004",
-        "referenceSlippage": ""
-    },
-    "chainId": 501,
-    "direction": "0",
-    "fromTokenAddress": "11111111111111111111111111111111",
-    "fromAmount": "0.001",
-    "toTokenAddress": "pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn",
-    "toAmount": "1976.162807",
-    "priorityFeeType": 1,
-    "priorityFee": "0.0006055",
-    "estimateGasFee": "292000",
-    "serviceFeeInfo": {
-        "discountedServiceFeeRate": "0.0085",
-        "faqUrl": "https://web3.okx.com/dex-fees",
-        "feeTokenAddress": "11111111111111111111111111111111",
-        "isChargeVersion": "1",
-        "isDisplayServiceFee": "1",
-        "originalServiceFeeRate": "0.0085",
-        "refCode": "",
-        "referralCommissionAddress": "",
-        "referralCommissionRate": "",
-        "serviceFeeUsd": "0.001922275"
-    },
-    "teeSilentSignEnabled": false,
-    "fromTokenDecimals": 9,
-    "toTokenDecimals": 6,
-    "userWalletAddress": "6QJnyDfQHu1mfCpMiyamBhshbjsAQm9T8baSpHPyrtNe",
-    "teeSignMarketRelTs": "60000",
-    "teeSignTpslRelTs": "604800000",
-    "defiPlatformId": "11",
-    "executeSilentSignPreExecInConfirm": false
-}
+        body
       ),
     );
   } catch (e) {
