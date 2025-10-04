@@ -32,13 +32,13 @@ export const VolManager: React.FC<VolManagerProps> = ({ solanaService, onVolChan
     <div className="neumorphism-raised p-6 mb-6">
       <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
         <div className="w-2 h-2 bg-pink rounded-full animate-pulse"></div>
-        交易比例
+        刷量大小
       </h2>
       
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-light mb-2">
-            比例管理
+            交易量管理
           </label>
           <textarea
             value={vol}
@@ -55,29 +55,29 @@ export const VolManager: React.FC<VolManagerProps> = ({ solanaService, onVolChan
         
         <div className="flex gap-3 grid grid-cols-2 md:grid-cols-4 mb-6">
           <button
-          onClick={()=>{handleVolChange(25)}}
+          onClick={()=>{handleVolChange(256)}}
             className="bg-gray-dark hover:bg-gray text-white font-medium py-3 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            25 %
+            256 $
           </button>
           <button
-          onClick={()=>{handleVolChange(50)}}
+          onClick={()=>{handleVolChange(512)}}
             className="bg-gray-dark hover:bg-gray text-white font-medium py-3 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            50 %
+            512 $
           </button>
           <button
-          onClick={()=>{handleVolChange(75)}}
+          onClick={()=>{handleVolChange(1024)}}
             className="bg-gray-dark hover:bg-gray text-white font-medium py-3 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            75 %
+            1024 $
           </button>
 
           <button
-          onClick={()=>{handleVolChange(100)}}
+          onClick={()=>{handleVolChange(2048)}}
             className="bg-gray-dark hover:bg-gray text-white font-medium py-3 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            100 %
+            2048 $
           </button>
 
         </div>

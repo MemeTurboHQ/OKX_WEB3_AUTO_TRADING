@@ -69,7 +69,7 @@ function App() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2 animate-glow-pulse bg-gray-800 px-4 py-2 rounded-3xl">
-            JUP MULTI TRADING (Solana)
+            OKX BOOST VOL TRADING (Solana)
           </h1>
 
           {/* <p className="text-gray-light">
@@ -117,12 +117,6 @@ function App() {
               solanaService={solanaServiceRef.current}
               onVolChanged={(vol:any) => {
                 console.log("change vol ::",vol)
-              }}
-            />
-            <SlippageManager
-              solanaService={solanaServiceRef.current}
-              onSlippageChange={(slippage:any) => {
-                console.log("slippage change ::",slippage)
               }}
             />
             <TradingControl 

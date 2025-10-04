@@ -105,25 +105,10 @@ export const TradingControl: React.FC<TradingControlProps> = ({
                 RUNNING...
               </div>
             ) : (
-              'BUY'
+              'STAR TRADING'
             )}
           </button>
           
-          <button
-            onClick={()=>{handleStartTrading(1)}}
-            disabled={!canStartTrading || isStarting}
-            className="flex-1 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-medium py-4 px-6 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 animate-glow-pulse"
-          >
-            {isStarting ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                RUNNING...
-              </div>
-            ) : (
-              'SELL'
-            )}
-          </button>
-
           <button
             onClick={handleStopTrading}
             disabled={!canStopTrading || isStopping}
