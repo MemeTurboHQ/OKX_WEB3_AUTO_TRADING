@@ -4,9 +4,10 @@ import { TradeLog } from '../services/solanaService';
 interface TradingLogProps {
   logs: TradeLog[];
   isTrading: boolean;
+  cleanLog:any
 }
 
-export const TradingLog: React.FC<TradingLogProps> = ({ logs, isTrading }) => {
+export const TradingLog: React.FC<TradingLogProps> = ({ logs, isTrading,cleanLog }) => {
   const [visibleLogs, setVisibleLogs] = useState<TradeLog[]>([]);
   const logContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -39,6 +40,8 @@ export const TradingLog: React.FC<TradingLogProps> = ({ logs, isTrading }) => {
   };
 
   const clearLogs = () => {
+    // setVisibleLogs([]);
+    cleanLog()
     setVisibleLogs([]);
   };
 
@@ -114,7 +117,7 @@ export const TradingLog: React.FC<TradingLogProps> = ({ logs, isTrading }) => {
               onClick={
                 ()=>
                 {
-                  window.open("https://solscan.io/tx/"+log.id)
+                  window.open("https://solscan.io/tx/"+log.txHash)
                 }
               }
             >
@@ -126,11 +129,11 @@ export const TradingLog: React.FC<TradingLogProps> = ({ logs, isTrading }) => {
                       ? 'bg-green-900/30 text-green-400'
                       : 'bg-red-900/30 text-red-400'
                   }`}>
-                    {log.type === 'buy' ? '买入' : '卖出'}
+                    {log.type === 'buy' ? '自动交易' : '钱包签名'}
                   </span>
                 </div>
                 
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2 text-xs">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                   <div>
                     <span className="text-gray-light">时间: </span>
                     <span className="text-white font-mono">{formatTime(log.timestamp)}</span>
@@ -139,22 +142,22 @@ export const TradingLog: React.FC<TradingLogProps> = ({ logs, isTrading }) => {
                     <span className="text-gray-light">钱包: </span>
                     <span className="text-blue-400 font-mono">{log.walletAddress}</span>
                   </div>
-                  <div>
+                  {/* <div>
                     <span className="text-gray-light">代币: </span>
                     <span className="text-purple-400 font-mono">{log.tokenAddress}</span>
                   </div>
                   <div>
                     <span className="text-gray-light">数量: </span>
                     <span className="text-yellow-400 font-mono">{log.amount.toFixed(2)}</span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               
               <div className="flex items-center gap-2 ml-4">
                 {log.txHash && (
                   <div className="text-xs">
-                    <span className="text-gray-light">交易哈希: </span>
-                    <span className="text-pink-400 font-mono">{log.txHash.substring(0, 12)}...</span>
+                    <span className="text-gray-light"> {log.type === 'buy' ? '交易哈希' : '签名哈希'} : </span>
+                    <span className="text-pink-400 font-mono">{log.txHash.substring(0, 20)}...</span>
                   </div>
                 )}
                 <div className={`w-2 h-2 rounded-full ${

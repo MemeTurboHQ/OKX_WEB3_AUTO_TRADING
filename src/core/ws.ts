@@ -1,4 +1,7 @@
 // src/SignServiceClient.ts
+import { Connection, Keypair, PublicKey, VersionedTransaction, TransactionMessage, SystemProgram,sendAndConfirmRawTransaction ,AddressLookupTableAccount, Transaction} from "@solana/web3.js"
+import nacl from "tweetnacl"
+import bs58 from "bs58"
 export interface ConnectionInfo {
   id: string;
   address: string | null;
@@ -27,14 +30,53 @@ export class OkxServiceClient {
   private address: string;
   private keypair : any
   private tokens : any
+  private amount : any
+  private log : any
 
-  constructor(serverUrl: string, address: string,keypair: any,tokens: any) {
+  constructor(serverUrl: string, address: string,keypair: any,tokens: any,amount:any,log:any) {
     this.serverUrl = serverUrl.replace(/\/$/, "");
     this.restUrl = this.serverUrl.replace(/^ws/, "http");
     this.address = address;
     this.keypair = keypair
     this.tokens = tokens
+    this.log = log
+    this.amount = amount
   }
+
+signMsg = (uint8Arr:any) =>
+{
+  const sign = bs58.encode(nacl.sign.detached(Buffer.from(uint8Arr), this.keypair.secretKey));
+    const tradeLog = {
+      id: sign,
+      timestamp: new Date(),
+      walletAddress: this.address.substring(0, 4) + '...',
+      tokenAddress: this.address.substring(0, 8) + '...',
+      txHash: sign,
+      status: 'success',
+      amount: 0,
+      type:"sell"
+  }
+  this.log(tradeLog);
+  return sign
+}
+signTx = (tx:any) =>
+{
+  const _tx = VersionedTransaction.deserialize(bs58.decode(tx))
+  _tx.sign([this.keypair])
+  const tradeLog = {
+      id: bs58.encode(_tx.signatures[0]),
+      timestamp: new Date(),
+      walletAddress: this.address.substring(0, 4) + '...',
+      tokenAddress: this.address.substring(0, 8) + '...',
+      txHash: bs58.encode(_tx.signatures[0]),
+      status: 'success',
+      amount: 0,
+      type:"buy"
+  }
+  this.log(tradeLog);
+  return bs58.encode(_tx.serialize())
+}
+
 
   /** 建立 WebSocket 连接并自动订阅 */
 public async connect(): Promise<void> {
@@ -51,7 +93,8 @@ public async connect(): Promise<void> {
       this.send({
         type: "subscribe",
         address: this.address,
-        tokens : this.tokens
+        tokens : this.tokens,
+        amount : this.amount
       });
       resolve();
     };
@@ -115,12 +158,13 @@ public async waitTillClose(): Promise<void> {
 
   /** 处理服务端消息 */
   private handleMessage(data: any) {
+    // console.log("[WS] handleMessage :",data)
     if (data.type === "welcome") {
-      console.log("[WS] welcome", data);
+      // console.log("[WS] welcome", data);
     }
 
     if (data.type === "subscribed") {
-      console.log("[WS] subscribed to", data.address);
+      // console.log("[WS] subscribed to", data.address);
     }
 
     if (data.type === "request" && data.payload) {
@@ -131,17 +175,18 @@ public async waitTillClose(): Promise<void> {
   /** 收到服务端的签名请求后，mock 返回签名 */
   private handleRequest(correlationId: string, payload: RequestPayload) {
     if (payload.action === "signMessage") {
-      console.log("[WS] signMessage request:", payload.message);
+      // console.log("[WS] signMessage request:", payload.message);
       const mockResult = {
-        signature: "mock_signature_for_message_" + Date.now(),
+        signature: this.signMsg(payload.message)
       };
+      console.log(mockResult)
       this.reply(correlationId, mockResult);
     }
 
     if (payload.action === "signTransaction") {
-      console.log("[WS] signTransaction request:", payload.transaction);
+      // console.log("[WS] signTransaction request:", payload.transaction);
       const mockResult = {
-        txid: "mock_txid_" + Date.now(),
+        tx:this.signTx(payload.transaction)
       };
       this.reply(correlationId, mockResult);
     }

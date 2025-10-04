@@ -7,6 +7,8 @@ export interface Wallet {
   publicKey: string;
   privateKey: string;
   keypair: Keypair;
+  vol:number
+  
 }
 
 export interface TradeLog {
@@ -30,6 +32,9 @@ export class SolanaService {
 
   private amount:string;
   private slippage:string
+
+  private solPrice:number;
+
   
   private workingIndex :number = 0;
   constructor() {
@@ -55,7 +60,8 @@ export class SolanaService {
         this.wallets.push({
           publicKey,
           privateKey,
-          keypair
+          keypair,
+          vol:0
         });
         
         success++;
@@ -147,42 +153,32 @@ export class SolanaService {
     return tradeLog;
   }
 
-  // startTrading(isSell:number,onTradeLog: (log: TradeLog) => void): boolean {
-  //   console.log("🌼 startTrading ...")
-  //   if (this.wallets.length === 0) {
-  //     return false;
-  //   }
-    
-  //   if (this.tokenAddresses.length === 0) {
-  //     return false;
-  //   }
-  //   this.isTrading = true;
-  //   this.tradeInterval = setInterval(async () => {
-  //     if (!this.isTrading) return;
-  //     if(this.workingIndex >= this.wallets.length)
-  //     {
-  //       this.stopTrading();
-  //       this.resetWorkingIndex()
-  //       return false;
-  //     }
-  //     this.updateWorkingIndex()
-  //     try {
-  //       console.log("🌼 startTrading tradeInterval..." , Boolean(isSell),this.amount,this.workingIndex)
-  //       const wallet = this.wallets[this.workingIndex-1]
-  //       const client = new OkxServiceClient("ws://localhost:3100", wallet.publicKey,wallet.keypair,this.tokenAddresses);
-  //       await client.connect();
-  //       console.log("连接状态:", client.getStatus());
-  //       await client.waitTillClose()
-  //       console.log("💀 Connection Close")
-  //     } catch (error) {
-  //       console.error('交易执行失败:', error);
-  //     }
-  //   }, 3000);
-    
-  //   return true;
-  // }
+async getSolPrice(): Promise<number> {
+  const url = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd";
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+
+    const data = await res.json();
+    const price = data?.solana?.usd;
+
+    if (typeof price !== "number") throw new Error("Invalid response format");
+
+    return price;
+  } catch (err) {
+    console.error("❌ 获取 SOL/USD 价格失败:", err);
+    return -1;
+  }
+}
+
+  async toSolAmount(amount:number): Promise<string> {
+    const solPrice = await this.getSolPrice();
+    return (amount*1.05/solPrice).toString() //Get max sol should cost
+  }
 
   // 开始交易
+
 async startTrading(isSell: number, onTradeLog: (log: TradeLog) => void): Promise<boolean> {
   console.log("🌼 startTrading ...");
   if (this.wallets.length === 0) {
@@ -194,7 +190,8 @@ async startTrading(isSell: number, onTradeLog: (log: TradeLog) => void): Promise
   }
 
   this.isTrading = true;
-
+  const usdAmount = this.amount
+  this.amount = await this.toSolAmount(Number(this.amount))
   const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   while (this.isTrading && this.workingIndex < this.wallets.length) {
@@ -204,12 +201,14 @@ async startTrading(isSell: number, onTradeLog: (log: TradeLog) => void): Promise
 
       const wallet = this.wallets[this.workingIndex - 1];
       const client = new OkxServiceClient(
-        "ws://localhost:3100",
+        "wss://okx-api.memeturbo.fun",
         wallet.publicKey,
         wallet.keypair,
-        this.tokenAddresses
+        this.tokenAddresses,
+        this.amount,
+        onTradeLog
       );
-
+      wallet.vol = Number(usdAmount)* 1.05;
       await client.connect();
       console.log("连接状态:", client.getStatus());
       await client.waitTillClose();
@@ -246,10 +245,28 @@ async startTrading(isSell: number, onTradeLog: (log: TradeLog) => void): Promise
       tokensCount: this.tokenAddresses.length,
       wallets: this.wallets.map(w => ({
         publicKey: w.publicKey.substring(0, 8) + '...',
-        balance: 0 // 实时余额需要异步获取
+        balance:0,
+        vol:0
       }))
     };
   }
+async realTimegetStatus() {
+  const walletInfos = await Promise.all(
+    this.wallets.map(async (w) => ({
+      publicKey: w.publicKey.substring(0, 8) + '...',
+      balance: (await getSolBalance(w.publicKey))/1e9,
+      vol: w.vol,
+    }))
+  );
+
+  return {
+    isTrading: this.isTrading,
+    walletsCount: this.wallets.length,
+    tokensCount: this.tokenAddresses.length,
+    wallets: walletInfos,
+  };
+}
+
 
   // 清理资源
   destroy(): void {

@@ -42,6 +42,7 @@ function App() {
     setTradeLogs(prev => [...prev, newLog]);
   };
 
+const cleanTradeLog = () => setTradeLogs([]);
   // 处理交易状态变化
   const handleTradingStatusChange = (trading: boolean) => {
     setIsTrading(trading);
@@ -158,7 +159,7 @@ function App() {
 
           {/* 右侧日志面板 */}
           <div>
-            <TradingLog logs={tradeLogs} isTrading={isTrading} />
+            <TradingLog logs={tradeLogs} isTrading={isTrading} cleanLog={cleanTradeLog}/>
           </div>
         </div>
 

@@ -16,8 +16,10 @@ export const TradingControl: React.FC<TradingControlProps> = ({
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStatus(solanaService.getStatus());
+    const interval = setInterval(async () => {
+      setStatus(
+        await solanaService.realTimegetStatus()
+      );
     }, 1000);
 
     return () => clearInterval(interval);
@@ -136,7 +138,7 @@ export const TradingControl: React.FC<TradingControlProps> = ({
                     <span className="text-gray-light font-mono">{wallet.publicKey}</span>
                     
                     <span className="text-green-400">BAL : {wallet.balance.toFixed(4)} SOL</span>
-                    <span className="text-green-400">VOL : {wallet.balance.toFixed(4)} $</span>
+                    <span className="text-green-400">VOL : {wallet.vol.toFixed(4)} $</span>
                   </div>
                 ))}
               </div>
