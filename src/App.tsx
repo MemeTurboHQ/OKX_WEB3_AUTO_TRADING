@@ -126,25 +126,6 @@ const cleanTradeLog = () => setTradeLogs([]);
               onTradeLog={handleTradeLog}
             />
 
-            {/* 操作按钮 */}
-            <div className="neumorphism-raised p-6">
-              <h3 className="text-lg font-bold text-white mb-4">系统操作</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={handleReset}
-                  disabled={isTrading}
-                  className="bg-gray-dark hover:bg-gray text-white font-medium py-3 px-4 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  重置系统
-                </button>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg btn-hover"
-                >
-                  刷新页面
-                </button>
-              </div>
-            </div>
 
             {/* 安全提示 */}
             <div className="bg-yellow-900/20 border border-yellow-500/50 rounded-lg p-4">
@@ -158,14 +139,34 @@ const cleanTradeLog = () => setTradeLogs([]);
           </div>
 
           {/* 右侧日志面板 */}
-          <div>
+          <div className="grid gap-6">
             <TradingLog logs={tradeLogs} isTrading={isTrading} cleanLog={cleanTradeLog}/>
+            
+            {/* 操作按钮 */}
+            <div className="neumorphism-raised p-6">
+              <h3 className="text-lg font-bold text-white mb-4">更多功能</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => window.location.reload()}
+                  disabled={isTrading}
+                  className="bg-gray-dark hover:bg-gray text-white font-medium py-3 px-4 rounded-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  刷新页面
+                </button>
+                <button
+                  onClick={() => window.open("https://okxdex.memeturbo.fun/")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg btn-hover"
+                >
+                  Claim最高20%返佣
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-light text-sm">
-          <p>由 MiniMax Agent 构建 | 使用时请遵守相关法律法规</p>
+          <p>Power by <a href='https://github.com/MemeTurboHQ'>MEMETURBO Team</a></p>
         </div>
       </div>
     </div>
