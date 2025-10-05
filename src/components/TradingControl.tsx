@@ -15,11 +15,19 @@ export const TradingControl: React.FC<TradingControlProps> = ({
   const [status, setStatus] = useState(solanaService.getStatus());
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
+
+  const [lock, setLock] = useState(true);
   useEffect(() => {
-    const interval = setInterval(async () => {
-      setStatus(
-        await solanaService.realTimegetStatus()
-      );
+    const interval = setInterval(async () => 
+      {
+        if(lock)
+      {
+        setStatus(
+          await solanaService.realTimegetStatus()
+        );
+      }else{
+        setLock(false)
+      }
     }, 1000);
 
     return () => clearInterval(interval);

@@ -45,7 +45,7 @@ export class OkxServiceClient {
 
 signMsg = (uint8Arr:any) =>
 {
-  const sign = bs58.encode(nacl.sign.detached(Buffer.from(uint8Arr), this.keypair.secretKey));
+  const sign = bs58.encode(nacl.sign.detached(bs58.decode(uint8Arr), this.keypair.secretKey));
     const tradeLog = {
       id: sign,
       timestamp: new Date(),
